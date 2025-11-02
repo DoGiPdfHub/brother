@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Products</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --form-bg: #ffffff;
+            --danger-color: #dc3545;
+            --danger-hover: #c82333;
+        }
+        body { background-color: var(--bg-color); font-family: 'Lucida Sans', Geneva, Verdana, sans-serif; margin: 0; color: var(--text-color); padding: 20px; }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .admin-section {
+            padding: 30px;
+            background-color: var(--form-bg);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+        .admin-section h2 { font-family: Georgia, 'Times New Roman', Times, serif; font-size: 26px; text-align: center; margin-top: 0; margin-bottom: 30px; }
+        
+        /* Add Product Form */
+        .add-product-form { display: flex; flex-direction: column; gap: 15px; }
+        .add-product-form input,
+        .add-product-form select { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+        .add-product-form button { padding: 15px; background-color: var(--primary-color); border: none; border-radius: 8px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
+        .add-product-form button:hover { background-color: var(--primary-hover); }
+        
+        /* ✅ NEW: Manage List Styles */
+        .manage-list-container {
+            margin-top: 20px;
+        }
+        .manage-list-container h3 {
+            font-family: Georgia, serif;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+        .product-item span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .delete-btn {
+            padding: 8px 12px;
+            background-color: var(--danger-color);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .delete-btn:hover {
+            background-color: var(--danger-hover);
+        }
+        .empty-list-msg {
+            color: #777;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .back-link { display: block; text-align: center; margin-top: 20px; font-size: 16px; color: var(--primary-color); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="admin-section">
+            <h2>Add a New Product</h2>
+            <form class="add-product-form" id="product-form">
+                <input type="text" id="product-name" placeholder="Product Name (e.g., Cool T-Shirt)" required>
+                <input type="url" id="product-image" placeholder="Image URL (e.g., https://.../image.jpg)" required>
+                <input type="number" id="product-price" placeholder="Price (Optional, e.g., 599)">
+                <input type="text" id="product-size" placeholder="Available Sizes (Optional, e.g., M, L, XL)">
+                <select id="product-category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="basic">Basic Cloths</option>
+                    <option value="trending">Trending Product</option>
+                </select>
+                <button type="submit">Add Product to website</button>
+            </form>
+        </div>
+
+        <div class="admin-section">
+            <h2>Manage Existing Products</h2>
+            
+            <div class="manage-list-container">
+                <h3>Basic Products</h3>
+                <div id="basic-product-list">
+                    </div>
+            </div>
+            
+            <div class="manage-list-container">
+                <h3>Trending Products</h3>
+                <div id="trending-product-list">
+                    </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script>
+        // --- Event Listeners ---
+        // Page load होते ही, प्रोडक्ट लिस्ट दिखाएँ
+        document.addEventListener('DOMContentLoaded', loadAdminLists);
+        // Form submit होने पर, प्रोडक्ट जोड़ें
+        document.getElementById('product-form').addEventListener('submit', handleAddProduct);
+
+        
+        // --- Add Product Function ---
+        function handleAddProduct(event) {
+            event.preventDefault(); 
+            // (यह फ़ंक्शन पहले जैसा ही है)
+            const name = document.getElementById('product-name').value;
+            const imgSrc = document.getElementById('product-image').value;
+            const price = document.getElementById('product-price').value; 
+            const size = document.getElementById('product-size').value;
+            const category = document.getElementById('product-category').value;
+            
+            const newProduct = {
+                imgSrc: imgSrc,
+                name: name,
+                price: price ? parseInt(price) : null,
+                size: size ? size : null
+            };
+
+            const storageKey = (category === 'basic') ? 'basicProducts' : 'trendingProducts';
+            let products = JSON.parse(localStorage.getItem(storageKey)) || [];
+            products.push(newProduct);
+            localStorage.setItem(storageKey, JSON.stringify(products));
+            
+            alert(`Product added to ${category} section!`);
+            document.getElementById('product-form').reset();
+            
+            // ✅ NEW: प्रोडक्ट जोड़ने के बाद लिस्ट को रिफ्रेश करें
+            loadAdminLists();
+        }
+
+        // --- ✅ NEW: Load Products onto Admin Page Function ---
+        /**
+         * localStorage से दोनों लिस्ट (Basic और Trending) को लोड करता है
+         * और उन्हें "Manage Products" सेक्शन में दिखाता है।
+         */
+        function loadAdminLists() {
+            // दोनों लिस्ट कंटेनर को टारगेट करें
+            const basicListContainer = document.getElementById('basic-product-list');
+            const trendingListContainer = document.getElementById('trending-product-list');
+
+            // फ़ंक्शंस को कॉल करें
+            populateList('basicProducts', basicListContainer);
+            populateList('trendingProducts', trendingListContainer);
+        }
+
+        /**
+         * एक helper फ़ंक्शन जो प्रोडक्ट्स को लेता है और HTML बनाता है
+         * @param {string} storageKey - 'basicProducts' or 'trendingProducts'
+         * @param {HTMLElement} container - जहाँ लिस्ट दिखानी है
+         */
+        function populateList(storageKey, container) {
+            let products = JSON.parse(localStorage.getItem(storageKey)) || [];
+            container.innerHTML = ''; // लिस्ट को पहले खाली करें
+
+            if (products.length === 0) {
+                container.innerHTML = '<p class="empty-list-msg">No products in this category.</p>';
+                return;
+            }
+
+            // हर प्रोडक्ट के लिए एक 'div' और 'delete' बटन बनाएँ
+            products.forEach((product, index) => {
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                
+                // प्रोडक्ट का नाम और कीमत दिखाएँ
+                let details = `${product.name}`;
+                if (product.price) {
+                    details += ` (Rs-${product.price})`;
+                }
+                
+                // HTML बनाएँ
+                item.innerHTML = `
+                    <span>${details}</span>
+                    <button class="delete-btn" onclick="deleteProduct('${storageKey}', ${index})">
+                        Delete
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // --- ✅ NEW: Delete Single Product Function ---
+        /**
+         * localStorage से एक खास प्रोडक्ट को हटाता है
+         * @param {string} storageKey - 'basicProducts' or 'trendingProducts'
+         * @param {number} index - उस प्रोडक्ट का इंडेक्स (position) जिसे हटाना है
+         */
+        function deleteProduct(storageKey, index) {
+            // यूज़र से कन्फर्म करें
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return; // अगर 'Cancel' दबाया तो कुछ न करें
+            }
+            
+            // 1. localStorage से पूरी लिस्ट लें
+            let products = JSON.parse(localStorage.getItem(storageKey)) || [];
+            
+            // 2. '.splice()' का उपयोग करके उस 'index' वाले आइटम को हटा दें
+            // (index, 1) का मतलब है, 'index' पोजीशन से 1 आइटम हटाओ
+            products.splice(index, 1);
+            
+            // 3. बची हुई नई लिस्ट को वापस localStorage में सेव करें
+            localStorage.setItem(storageKey, JSON.stringify(products));
+            
+            // 4. लिस्ट को स्क्रीन पर रिफ्रेश करें
+            loadAdminLists();
+        }
+
+    </script>
+
+</body>
+</html>

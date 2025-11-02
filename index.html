@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brothers Outfit Gallery</title>
+    <style>
+        /* (यहाँ आपका सारा CSS आएगा - कोई बदलाव नहीं) */
+        :root {
+            --bg-color: #f8f9fa;
+            --navbar-bg: #ffffff;
+            --text-color: #212529;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --navbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --admin-color: #28a745; 
+            --admin-hover: #218838;
+        }
+        body { background-color: var(--bg-color); font-family: 'Lucida Sans', Geneva, Verdana, sans-serif; margin: 0; color: var(--text-color); }
+        .navbar { width: 100%; background-color: var(--navbar-bg); padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: var(--navbar-shadow); box-sizing: border-box; }
+        .logo { object-fit: cover; border-radius: 50%; width: 80px; height: 80px; }
+        .shop-title { font-family: Georgia, serif; }
+        .shop-title h1 { font-size: 28px; font-weight: bold; margin: 0; }
+        .shop-title p { font-size: 14px; color: #6c757d; margin: 4px 0 0; }
+        .nav-buttons { width: auto; margin-left: auto; display: flex; gap: 20px; }
+        .nav-buttons button { padding: 12px 24px; background-color: var(--primary-color); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; }
+        .nav-buttons button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); }
+        .nav-buttons button.admin-btn { background-color: var(--admin-color); }
+        .nav-buttons button.admin-btn:hover { background-color: var(--admin-hover); box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
+        .hero-section { display: flex; justify-content: center; align-items: center; padding: 40px 20px; position: relative; }
+        .hero-image { width: 1000px; max-width: 100%; height: 500px; object-fit: cover; border-radius: 20px; box-shadow: var(--card-shadow); transition: transform 0.3s ease; }
+        .hero-image:hover { transform: scale(1.02); }
+        .image-text { position: absolute; top: 70%; left: 50%; font-size: 20px; color: white; transform: translate(-50%, -50%); text-align: center; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); width: 80%; }
+        .image-button { position: absolute; top: 85%; left: 50%; transform: translate(-50%, -50%); }
+        .image-button button { padding: 12px 24px; background-color: var(--primary-color); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; }
+        .image-button button:hover { background-color: var(--primary-hover); transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); }
+        .trending-container, .basic-container { padding: 20px 40px; }
+        .trending-container h2, .basic-container h2 { font-family: Georgia, 'Times New Roman', Times, serif; font-size: 26px; text-align: center; margin-bottom: 30px; margin-top: 40px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .product-card { background-color: #fff; border-radius: 12px; box-shadow: var(--card-shadow); padding: 20px; text-align: center; transition: transform 0.3s ease; }
+        .product-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; }
+        .product-card h3 { font-size: 18px; margin-top: 15px; color: var(--text-color); }
+        .product-card:hover { transform: translateY(-10px); }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <img class="logo" src="https://i.pinimg.com/736x/ed/a7/2a/eda72a213e92eae06cdca825acadb3e2.jpg" alt="Brothers Outfit Logo">
+        <div class="shop-title">
+            <h1>BROTHERS OUTFIT GALLERY</h1>
+            <p>Address - Himatnagar , Sabarkantha , Mo-9409024195 </p>
+        </div>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='/ecomerce/shopnow.html'">Shop</button>
+            <button onclick="window.location.href='/ecomerce/cart.html'">Cart</button>
+            <button onclick="window.location.href='/ecomerce/profile.html'">Profile</button>
+            <button onclick="window.location.href='/ecomerce/aboutus.html'">About Us</button>
+            
+        </div>
+    </div>
+    <div class="hero-section">
+        <img src="https://i.pinimg.com/1200x/86/c3/96/86c396881e3a534f314903ab90f66336.jpg" alt="Fashion Outfit" class="hero-image">
+        <div class="image-text">
+            <h4>This Shop Is run last 5 year...</h4>
+        </div>
+        <div class="image-button">
+            <form action="/ecomerce/shopnow.html" method="get">
+                <button>Shop Now</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="trending-container">
+        <h2>Trending Products</h2>
+        <div class="product-grid" id="trending-product-grid">
+            </div>
+    </div>
+
+    <div class="basic-container">
+        <h2> Man's basic cloths </h2>
+        <div class="product-grid" id="basic-product-grid">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProductsFromStorage('trendingProducts', 'trending-product-grid');
+            loadProductsFromStorage('basicProducts', 'basic-product-grid');
+        });
+
+        function loadProductsFromStorage(storageKey, gridId) {
+            const productsJSON = localStorage.getItem(storageKey);
+            let products = JSON.parse(productsJSON) || [];
+            
+            const grid = document.getElementById(gridId);
+            if (!grid) return; 
+            
+            grid.innerHTML = ''; 
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // --- ✅ NEW: स्मार्ट HTML जेनरेशन ---
+                
+                // 1. नाम और साइज़ के लिए HTML बनाएँ
+                // (product.size && product.size) का मतलब है - "अगर product.size मौजूद है"
+                let nameHtml = `<h3>${product.name}`;
+                if (product.size) {
+                    nameHtml += `<br>Size: ${product.size}`;
+                }
+                
+                // 2. कीमत के लिए HTML बनाएँ
+                if (product.price) {
+                    nameHtml += `<br>Price - Rs-${product.price}`;
+                }
+                nameHtml += `</h3>`;
+                // --- अंत ---
+
+                // 3. पूरा कार्ड HTML सेट करें
+                card.innerHTML = `
+                    <img src="${product.imgSrc}" alt="${product.name}" height="300">
+                    ${nameHtml}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+    </script>
+
+</body>
+</html>
